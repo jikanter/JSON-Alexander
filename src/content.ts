@@ -58,12 +58,7 @@ function updateThemeButton(): void {
   if (!btn) return;
   const theme = getTheme();
   const icons: Record<string, string> = { auto: "◐", dark: "☾", light: "☀" };
-  const labels: Record<string, string> = {
-    auto: "Auto",
-    dark: "Dark",
-    light: "Light",
-  };
-  btn.textContent = `${icons[theme]} ${labels[theme]}`;
+  btn.textContent = icons[theme];
 }
 
 function init(): void {
@@ -97,6 +92,12 @@ function init(): void {
       </div>
       <button id="jv-theme-toggle" title="Toggle theme"></button>
       <button id="jv-copy">Copy JSON</button>
+      <div id="jv-settings">
+        <button id="jv-settings-toggle" title="Settings">⚙</button>
+        <div id="jv-settings-menu">
+          <label><input type="checkbox" id="jv-cursor-toggle"> Custom cursor</label>
+        </div>
+      </div>
     </div>
     <div id="jv-content">
       <pre id="jv-tree"></pre>
@@ -107,9 +108,16 @@ function init(): void {
 
   body.appendChild(root);
 
-  // Set custom cursor
+  // Custom cursor (off by default)
   const cursorUrl = chrome.runtime.getURL("pointer-32.png");
-  root.style.setProperty("--cursor-custom", `url(${cursorUrl}), default`);
+  function applyCustomCursor(enabled: boolean) {
+    if (enabled) {
+      root.style.setProperty("--cursor-custom", `url(${cursorUrl}), default`);
+    } else {
+      root.style.setProperty("--cursor-custom", "default");
+    }
+  }
+  applyCustomCursor(localStorage.getItem("jv-custom-cursor") === "true");
 
   // Re-inject styles (we nuked the head)
   const style = document.createElement("style");
@@ -221,6 +229,26 @@ function init(): void {
   // Theme toggle
   updateThemeButton();
   document.getElementById("jv-theme-toggle")!.addEventListener("click", cycleTheme);
+
+  // Settings menu
+  const settingsToggle = document.getElementById("jv-settings-toggle")!;
+  const settingsMenu = document.getElementById("jv-settings-menu")!;
+  settingsToggle.addEventListener("click", () => {
+    settingsMenu.classList.toggle("jv-open");
+  });
+  document.addEventListener("click", (e) => {
+    if (!(e.target as HTMLElement).closest("#jv-settings")) {
+      settingsMenu.classList.remove("jv-open");
+    }
+  });
+
+  // Custom cursor toggle
+  const cursorCheckbox = document.getElementById("jv-cursor-toggle") as HTMLInputElement;
+  cursorCheckbox.checked = localStorage.getItem("jv-custom-cursor") === "true";
+  cursorCheckbox.addEventListener("change", () => {
+    localStorage.setItem("jv-custom-cursor", String(cursorCheckbox.checked));
+    applyCustomCursor(cursorCheckbox.checked);
+  });
 
   // Hover path
   setupHoverPath(tree, pathText, pathDisplay, pathCopyBtn);

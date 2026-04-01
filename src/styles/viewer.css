@@ -306,10 +306,6 @@
   display: none;
   align-items: center;
   gap: 6px;
-  padding: 2px 8px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
   font-size: 12px;
   max-width: 50vw;
   overflow: hidden;
@@ -319,8 +315,8 @@
   display: inline-flex;
 }
 
-#jv-path-display.jv-pinned {
-  border-color: var(--accent);
+#jv-path-display.jv-pinned #jv-path-text {
+  color: var(--accent);
 }
 
 #jv-path-text {
@@ -394,4 +390,40 @@
 #jv-formatted.jv-active,
 #jv-raw.jv-active {
   display: block;
+}
+
+/* ── Settings ── */
+#jv-settings {
+  position: relative;
+}
+
+#jv-settings-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  padding: 8px 12px;
+  background: var(--bg-toolbar);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#jv-settings-menu.jv-open {
+  display: block;
+}
+
+#jv-settings-menu label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+#jv-settings-menu input[type="checkbox"] {
+  accent-color: var(--accent);
 }
